@@ -1,1 +1,5 @@
+.idea
 demo
+*.ts
+!angular.ts
+!*.d.ts

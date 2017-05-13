@@ -1,6 +1,6 @@
 # nativescript-i18n
 
-This is a plugin for Nativescript that implements i18n in an easy manner.
+This is a plugin for Nativescript that implements **i18n** in an easy manner.
 
 It uses the native capabilities of each platform without the need of a separate JS or JSON file.
 
@@ -8,13 +8,17 @@ It is heavily inspired from [NativeLang](https://github.com/alejonext/NativeLang
 
 The plugin defines an `L()` method at the application level so it will be accessible both from the XML and JS files.
 
-###! Please don't forget to read the [IMPORTANT section](https://github.com/rborn/nativescript-i18n#important-) ! :smile: ###
+**Please don't forget to read the [IMPORTANT section](#important)! :smile:**
 
 
-###Credits
+**Credits**
+
 Thanks to [@TheBrousse](https://twitter.com/TheBrousse) and [@ValioStoychev](https://twitter.com/valiostoychev) for the help with iOS and [@alejonext](https://github.com/alejonext/NativeLang) for creating the initial module.
 
-###Usage
+Also a big thanks to all the [contributors](https://github.com/rborn/nativescript-i18n/graphs/contributors) that made this repo better :)
+
+**Usage**
+
 Install the plugin in your app
 
 ~~~
@@ -45,7 +49,7 @@ Require `nativescript-i18n` and `globals` in `app.js` as early as possible (I do
 
 And in the code use it like this:
 
-####XML files####
+**XML files**
 
 **Simple string**
 
@@ -69,9 +73,31 @@ Assuming you have defined in **strings.xml** the definitions and in the model th
 	<string formatted="false" name="multi_replace">We can replace directly in xml: %s or from the model: %s</string>
 ~~~
 
-####IMPORTANT !!####
+
+To define a custom path for the i18n files (other than `App_Resources/i18n`), add this configuration to your project's package.json
+
+~~~
+"nativescript-i18n": {
+    "customLangPath": "app/resources/i18n"
+}
+~~~
+
+
+Language defaults to english if the phone's language doesn't match any of your defined languages. If you want to set your own default language, add this configuration to your project's package.json
+
+**Keep in mind that on iOS the language picked by the device will be based on the order in** `Settings` -> `Language & Region` -> `Preferred language order`
+
+~~~
+"nativescript-i18n": {
+    "defaultLang": "es"
+}
+~~~
+
+### **IMPORTANT**
 
 -  for all the strings definitions that have a replacement you need to add `formatted=false`
+-  quotes and apostrophes need to be escaped `<string name="with_quotes">Apostrophe: \' and quotes: \"</string>`
+-  % signs need to be escaped by setting `formatted="false"` and then **doubling them up**: `<string formatted="false" name="percent"> Percent Sign: %%</string>`
 -  We need to add in strings.xml the next two lines for the app to compile properly which **also makes the app name localized on both ios and android and sets the title of the initial activity on android**
 
 	~~~
@@ -79,14 +105,16 @@ Assuming you have defined in **strings.xml** the definitions and in the model th
 	<string name="title_activity_kimera">demo</string>
 	~~~
 - **Sometimes you might need to fully delete the app from the device/sim for the plugin to fully work** (usually only when the plugin is installed at a later stage of the project development)
+- If you get TypeScript complaining about L not being defined, then put `/// <reference path="./node_modules/nativescript-i18n/references.d.ts" /> Nativescript i18n` in your `references.d.ts`.
 
-####JS files####
+**JS files**
+
 ~~~
 	console.log(L('home'));
 	console.log(L('multi_replace', 'ONE', 'TWO'));
 ~~~
 
-####Angular####
+**Angular**
 
 ~~In case you use Angular for your app, things get a little more complicated.~~
 
@@ -97,27 +125,28 @@ My Angular skills are zero but [@alejonext](https://github.com/alejonext/NativeL
 
 [@AirMike](https://github.com/AirMike) and [@loloof64](https://github.com/loloof64) did a great job by testing and further improving [@alejonext's PR](https://github.com/rborn/nativescript-i18n/pull/6) so the plugin includes now support for Angular :bow:
 
-After you import the plugin in the app in the usual way just import the `nativescript-i18n/angular` provider in your file (`app.module.ts`)
+After you import the plugin in the app in the usual way just need to import the module `NativeScriptI18nModule` from `nativescript-i18n/angular` in your file (main.ts)
 
 (Please be aware that the below intructions are in typescript not pure js)
 
+~~~
+	import { NativeScriptI18nModule } from "nativescript-i18n/angular";
+~~~
 
-	import { L } from 'nativescript-i18n/angular';
+and then import it in your app module
+
+~~~
+	@NgModule({
 
 
-and then bootstrap it as it follows (adding `L` as one of the entries in the `declarations` field of `@NgModule`)
+      imports: [
+        NativeScriptI18nModule
+      ]
 
 
-    @NgModule ({
-    ....
-        declarations :  [
-            AppComponent,
-            L , 
-          ... 
-       ], 
-    .... 
     })
-
+    export class AppModule { }
+~~~
 
 Angular usage is `{{ value | L:args }}`
 
@@ -127,36 +156,29 @@ Angular usage is `{{ value | L:args }}`
 
 As for a more detailed example :
 
-You can put a code like this in your `app.module.ts` :
+You can put a code like this in your main.ts :
 
 ~~~
-    import { L } from 'nativescript-i18n/angular';
-    
+    import { NativeScriptI18nModule } from 'nativescript-i18n/angular';
+
     import { NativeScriptModule } from "nativescript-angular/platform";
     import { NgModule } from "@angular/core";
-    import { NativeScriptFormsModule } from "nativescript-angular/forms";
-    import { NativeScriptHttpModule } from "nativescript-angular/http";
-    import { NativeScriptRouterModule } from "nativescript-angular/router";
-    
     import { AppComponent } from "./app.component";
-    import { routes, navigatableComponents } from "./app.routing";
-    
+
+
     @NgModule({
+
       imports: [
         NativeScriptModule,
-        NativeScriptFormsModule,
-        NativeScriptHttpModule,
-        NativeScriptRouterModule,
-        NativeScriptRouterModule.forRoot(routes)
+        NativeScriptI18nModule
       ],
+
       declarations: [
         AppComponent,
-        L,
-        ...navigatableComponents,
       ],
-      bootstrap: [AppComponent],
+      bootstrap: [AppComponent]
     })
-    export class AppModule {}
+    export class AppModule { }
 ~~~
 
 For the main component, let's say that the following html template is used (the strings definitions follow next):
@@ -211,14 +233,37 @@ Or, if configured for english or "unrecognized" language :
     --- New... *** 124.25693
 ~~~
 
-####Demo####
+**Demo**
+
 Please have a look in the `demo` folder for a working example.
 
+**iOS Permission text**
+
+Add this special keys to `app/i18n/(lang)/strings.xml` used to notify user, in configured language while showing permission alerts.
+
+| Key                                       | Description of key   |
+| ----------------------------------------- | ---------------------|
+|NSAppleMusicUsageDescription               | Specifies the reason for your app to use the media library|
+|NSBluetoothPeripheralUsageDescription      | Specifies the reason for your app to use Bluetooth|
+|NSCalendarsUsageDescription                | Specifies the reason for your app to access the user’s calendars|
+|NSCameraUsageDescription                   | Specifies the reason for your app to access the device’s camera|
+|NSContactsUsageDescription                 | Specifies the reason for your app to access the user’s contacts|
+|NSHealthShareUsageDescription              | Specifies the reason for your app to read the user’s health data|
+|NSHealthUpdateUsageDescription             | Specifies the reason for your app to make changes to the user’s health data|
+|NSHomeKitUsageDescription                  | Specifies the reason for your app to access the user’s HomeKit configuration data|
+|NSLocationAlwaysUsageDescription           | Specifies the reason for your app to access the user’s location information at all times|
+|NSLocationWhenInUseUsageDescription        | Specifies the reason for your app to access the user’s location information while your app is in use|
+|NSMicrophoneUsageDescription               | Specifies the reason for your app to access any of the device’s microphones|
+|NSMotionUsageDescription                   | Specifies the reason for your app to access the device’s accelerometer|
+|NSPhotoLibraryUsageDescription             | Specifies the reason for your app to access the user’s photo library|
+|NSRemindersUsageDescription                | Specifies the reason for your app to access the user’s reminders|
+|NSSiriUsageDescription                     | Specifies the reason for your app to send user data to Siri|
+|NSSpeechRecognitionUsageDescription        | Specifies the reason for your app to send user data to Apple’s speech recognition servers|
 
 
-### (pseudo) roadmap/ideas
+**(Pseudo) roadmap/ideas**
 
-The following ideas are inspired by [this comment](https://github.com/NativeScript/NativeScript/issues/42#issuecomment-169202040)
+The following ideas are inspired by [this comment](https://github.com/NativeScript/NativeScript/issues/42#issuecomment-169202040) and issues posted by  the users of this plugin
 
 
 - [x] Android implementation - use the native `strings.xml` in `App_Resources/Android/values/`
@@ -233,3 +278,9 @@ The following ideas are inspired by [this comment](https://github.com/NativeScri
 - [ ] Do we need a cache at the module level so we don't have to cross the native bridge everytime? (a benchmark should be done to decide this)
 - [x] Make the cache aware of the current language and language change
 - [x] Angular support
+- [x] Custom path for the language files ([#28](https://github.com/rborn/nativescript-i18n/issues/28))
+- [x] Set default language for app ([#11](https://github.com/rborn/nativescript-i18n/issues/11))
+- [x] Show translations on app permission alerts on iOS ([#45](https://github.com/rborn/nativescript-i18n/issues/45))
+- [ ] Report errors on case some files could not be created
+- [ ] Webpack support ([#49](https://github.com/rborn/nativescript-i18n/issues/49), [#42](https://github.com/rborn/nativescript-i18n/issues/42))
+

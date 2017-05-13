@@ -1,8 +1,8 @@
-require('./i18n');
+import * as application from 'tns-core-modules/application';
+import './i18n';
 import 'reflect-metadata';
 
-import {provide, PLATFORM_PIPES} from '@angular/core';
-import {Pipe, PipeTransform} from '@angular/core';
+import { Pipe, PipeTransform, NgModule } from '@angular/core';
 
 /**
  * Translate in angular
@@ -14,12 +14,18 @@ import {Pipe, PipeTransform} from '@angular/core';
  *   if 'My text' is defined as <string name="My text" formatted="false">Mi text %d and %f</string>
  */
 @Pipe({
-	name: 'L'
+    name: 'L'
 })
 export class L implements PipeTransform {
     transform(value: string, ...more: string[]): string {
-        return global.L(value, ...more);
+        return application.getResources().L(value, ...more);
     }
 }
 
-export const I18N_PROVIDERS = [provide(PLATFORM_PIPES, {useValue: [L], multi: true})];
+@NgModule({
+    declarations: [L],
+    exports: [L]
+})
+
+
+export class NativeScriptI18nModule { }
